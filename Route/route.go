@@ -1,6 +1,7 @@
 package Route
 
 import (
+	"EMP_API/Details"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -17,7 +18,7 @@ func Connect() {
 	if err == nil {
 		log.Print("Connected")
 	}
-	_ = Database.AutoMigrate(&EMP{})
+	_ = Database.AutoMigrate(&Details.EMP{})
 
 	DB = Database
 }
@@ -27,7 +28,7 @@ func Initialize() {
 	R.GET("/fetch", Fetching)
 	R.GET("/fetch/:id", Fbyid)
 	R.POST("/create", Creating)
-	//r.PUT("/change", updating)
+	R.PUT("/change/:id", Updating)
 	//r.DELETE("/delete", deleting)
 	R.Run(":8000")
 }

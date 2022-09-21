@@ -1,7 +1,9 @@
 package Route
 
 import (
+	"EMP_API/Details"
 	"github.com/gin-gonic/gin"
+	_ "golang.org/x/crypto/openpgp/errors"
 	"gorm.io/gorm"
 	"net/http"
 )
@@ -9,15 +11,8 @@ import (
 var DB *gorm.DB
 var R = gin.Default()
 
-type EMP struct {
-	gorm.Model
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	City     string `json:"city"`
-}
-
 func Creating(c *gin.Context) {
-	var empobj EMP
+	var empobj Details.EMP
 
 	if err := c.BindJSON(&empobj); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
@@ -31,13 +26,13 @@ func Creating(c *gin.Context) {
 }
 
 func Fetching(a *gin.Context) {
-	var empobj []EMP
+	var empobj []Details.EMP
 	DB.Find(&empobj)
 	a.IndentedJSON(http.StatusOK, &empobj)
 }
 
 func Fbyid(a *gin.Context) {
-	var empobj EMP
+	var empobj Details.EMP
 
 	id := a.Param("id")
 	if err := DB.Where("id = ?", id).First(&empobj).Error; err != nil {
@@ -47,4 +42,18 @@ func Fbyid(a *gin.Context) {
 	a.JSON(http.StatusOK, empobj)
 }
 
-//f unc updating()
+func Updating(a *gin.Context) {
+	var empobj Details.EMP
+
+	id := a.Param("id")
+	if err := DB.Model(&empobj).Select("id = ?", id).Updates(&empobj).Error; err != nil {
+		a.JSON(http.StatusBadRequest, &empobj)
+		return
+	}
+	//err := a.BindJSON(&empobj)
+	//if err != nil {
+	//	a.JSON(http.StatusNotAcceptable, &empobj)
+	//} else {
+	a.IndentedJSON(http.StatusOK, &empobj)
+	DB.Save(&empobj)
+}
