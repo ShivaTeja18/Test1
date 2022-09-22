@@ -45,15 +45,27 @@ func Fbyid(a *gin.Context) {
 func Updating(a *gin.Context) {
 	var empobj Details.EMP
 
+	name := a.PostForm(empobj.Name)
+	password := a.PostForm(empobj.Password)
+	city := a.PostForm(empobj.City)
+
 	id := a.Param("id")
-	if err := DB.Model(&empobj).Select("id = ?", id).Updates(&empobj).Error; err != nil {
-		a.JSON(http.StatusBadRequest, &empobj)
+	if err := DB.Model(&empobj).Where("id = ?", id).Updates(Details.EMP{
+		Model:    gorm.Model{},
+		Name:     name,
+		Password: password,
+		City:     city,
+	}).Error; err != nil {
+		a.JSON(http.StatusNotAcceptable, &empobj)
 		return
 	}
-	//err := a.BindJSON(&empobj)
-	//if err != nil {
-	//	a.JSON(http.StatusNotAcceptable, &empobj)
-	//} else {
-	a.IndentedJSON(http.StatusOK, &empobj)
-	DB.Save(&empobj)
+
+	//a.JSON(http.StatusBadRequest, &empobj)
+
+	err := a.ShouldBindJSON(&empobj)
+	if err != nil {
+		a.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	} else {
+		a.IndentedJSON(http.StatusOK, empobj)
+	}
 }
