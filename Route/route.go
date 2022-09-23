@@ -29,6 +29,9 @@ func Initialize() {
 	R.GET("/fetch/:id", Fbyid)
 	R.POST("/create", Creating)
 	R.PUT("/change/:id", Updating)
-	//r.DELETE("/delete", deleting)
-	R.Run(":8000")
+	R.DELETE("/delete/:id", Deleting)
+	err := R.Run(":8000")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }

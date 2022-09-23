@@ -3,13 +3,21 @@ package Route
 import (
 	"EMP_API/Details"
 	"github.com/gin-gonic/gin"
-	_ "golang.org/x/crypto/openpgp/errors"
 	"gorm.io/gorm"
 	"net/http"
 )
 
 var DB *gorm.DB
 var R = gin.Default()
+
+func Fetching(a *gin.Context) {
+	var empobj []Details.EMP
+	DB.Find(&empobj)
+	a.IndentedJSON(http.StatusOK, gin.H{
+		"message": "SUCCESSFUL",
+		"result":  &empobj,
+	})
+}
 
 func Creating(c *gin.Context) {
 	var empobj Details.EMP
@@ -20,15 +28,12 @@ func Creating(c *gin.Context) {
 	if empobj.Name == "" || empobj.Password == "" || empobj.City == "" {
 		c.JSON(http.StatusNoContent, &empobj)
 	} else {
-		c.IndentedJSON(http.StatusOK, &empobj)
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"message": "SUCCESSFUL",
+			"result":  &empobj,
+		})
 	}
 	DB.Create(&empobj)
-}
-
-func Fetching(a *gin.Context) {
-	var empobj []Details.EMP
-	DB.Find(&empobj)
-	a.IndentedJSON(http.StatusOK, &empobj)
 }
 
 func Fbyid(a *gin.Context) {
@@ -39,33 +44,42 @@ func Fbyid(a *gin.Context) {
 		a.JSON(http.StatusNotFound, &empobj)
 		return
 	}
-	a.JSON(http.StatusOK, empobj)
+	a.JSON(http.StatusOK, gin.H{
+		"message": "SUCCESSFUL",
+		"result":  empobj,
+	})
 }
 
 func Updating(a *gin.Context) {
 	var empobj Details.EMP
 
-	name := a.PostForm(empobj.Name)
-	password := a.PostForm(empobj.Password)
-	city := a.PostForm(empobj.City)
-
 	id := a.Param("id")
-	if err := DB.Model(&empobj).Where("id = ?", id).Updates(Details.EMP{
-		Model:    gorm.Model{},
-		Name:     name,
-		Password: password,
-		City:     city,
-	}).Error; err != nil {
-		a.JSON(http.StatusNotAcceptable, &empobj)
+
+	if err := a.ShouldBindJSON(&empobj); err != nil {
+		a.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
 		return
 	}
-
-	//a.JSON(http.StatusBadRequest, &empobj)
-
-	err := a.ShouldBindJSON(&empobj)
-	if err != nil {
-		a.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-	} else {
-		a.IndentedJSON(http.StatusOK, empobj)
+	if err := DB.Where("id = ?", id).Updates(&empobj).Error; err != nil {
+		a.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
+		return
 	}
+	//a.JSON(http.StatusBadRequest, &empobj)
+	a.IndentedJSON(http.StatusOK, gin.H{
+		"message": "SUCCESSFUL",
+		"result":  empobj,
+	})
+}
+
+func Deleting(c *gin.Context) {
+	var empobj Details.EMP
+
+	id := c.Param("id")
+	if err := DB.Where("id = ?", id).Unscoped().Delete(&empobj).Error; err != nil {
+		c.JSON(http.StatusNotFound, &empobj)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "SUCCESSFUL",
+		"result":  empobj,
+	})
 }
