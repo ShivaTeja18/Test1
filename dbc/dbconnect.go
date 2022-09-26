@@ -21,4 +21,5 @@ func Connect() {
 	_ = Database.AutoMigrate(&EMP{})
 
 	DB = Database
+
 }

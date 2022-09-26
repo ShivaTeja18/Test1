@@ -1,7 +1,7 @@
 package Methods
 
 import (
-	. "EMP_API/Details"
+	"EMP_API/Details"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
@@ -11,7 +11,7 @@ var DB *gorm.DB
 var R = gin.Default()
 
 func Fetching(a *gin.Context) {
-	var empobj []EMP
+	var empobj []Details.EMP
 	DB.Find(&empobj)
 	a.IndentedJSON(http.StatusOK, gin.H{
 		"message": "SUCCESSFUL",
@@ -20,7 +20,7 @@ func Fetching(a *gin.Context) {
 }
 
 func Creating(c *gin.Context) {
-	var empobj EMP
+	var empobj Details.EMP
 
 	if err := c.BindJSON(&empobj); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
@@ -37,7 +37,7 @@ func Creating(c *gin.Context) {
 }
 
 func Fbyid(a *gin.Context) {
-	var empobj EMP
+	var empobj Details.EMP
 
 	id := a.Param("id")
 	if err := DB.Where("id = ?", id).First(&empobj).Error; err != nil {
@@ -51,7 +51,7 @@ func Fbyid(a *gin.Context) {
 }
 
 func Updating(a *gin.Context) {
-	var empobj EMP
+	var empobj Details.EMP
 
 	id := a.Param("id")
 
@@ -71,7 +71,7 @@ func Updating(a *gin.Context) {
 }
 
 func Deleting(c *gin.Context) {
-	var empobj EMP
+	var empobj Details.EMP
 
 	id := c.Param("id")
 	if err := DB.Where("id = ?", id).Unscoped().Delete(&empobj).Error; err != nil {

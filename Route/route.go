@@ -1,18 +1,19 @@
 package Route
 
 import (
-	. "EMP_API/Methods"
+	"EMP_API/Methods"
+
 	"fmt"
 )
 
 func Initialize() {
 
-	R.GET("/fetch", Fetching)
-	R.GET("/fetch/:id", Fbyid)
-	R.POST("/create", Creating)
-	R.PUT("/change/:id", Updating)
-	R.DELETE("/delete/:id", Deleting)
-	err := R.Run(":8000")
+	Methods.R.GET("/fetch", Methods.Fetching)
+	Methods.R.GET("/fetch/:id", Methods.Fbyid)
+	Methods.R.POST("/create", Methods.Creating)
+	Methods.R.PUT("/change/:id", Methods.Updating)
+	Methods.R.DELETE("/delete/:id", Methods.Deleting)
+	err := Methods.R.Run(":8000")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
