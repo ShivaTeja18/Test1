@@ -1,7 +1,6 @@
 package Route
 
 import (
-	. "EMP_API/Details"
 	. "EMP_API/Methods"
 	"fmt"
 )

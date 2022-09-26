@@ -2,10 +2,11 @@ package main
 
 import (
 	"EMP_API/Route"
+	"EMP_API/dbc"
 )
 
 func main() {
-	Route.Connect()
+	dbc.Connect()
 	Route.Initialize()
 
 }
