@@ -1,8 +1,8 @@
 package dbc
 
 import (
-	. "EMP_API/Details"
-	. "EMP_API/Methods"
+	"EMP_API/Details"
+	"EMP_API/Methods"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -18,8 +18,7 @@ func Connect() {
 	if err == nil {
 		log.Print("Connected")
 	}
-	_ = Database.AutoMigrate(&EMP{})
+	_ = Database.AutoMigrate(&Details.EMP{})
 
-	DB = Database
-
+	Methods.DB = Database
 }
