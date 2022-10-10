@@ -9,7 +9,7 @@ import (
 )
 
 func Connect() {
-	const DNS = "host = 'localhost' port = '5432' dbname = 'API' user = 'postgres' password = 'Shiva@205101' sslmode = 'prefer'"
+	const DNS = `postgresql://postgres:shiva0709@localhost:5432/postgres`
 	Database, err := gorm.Open(postgres.Open(DNS), &gorm.Config{})
 
 	if err != nil {
