@@ -8,7 +8,3 @@ type EMP struct {
 	Password string `json:"password"`
 	City     string `json:"city"`
 }
-
-type Handler struct {
-	DB *gorm.DB
-}

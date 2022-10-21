@@ -2,26 +2,34 @@ package Methods
 
 import (
 	"EMP_API/Details"
+	"EMP_API/dbc"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
 )
 
+type Handler struct {
+	DB *gorm.DB
+}
+
 var DB *gorm.DB
 var R = gin.Default()
 
-func Fetching(a *gin.Context) {
+func (h Handler) Fetching(a *gin.Context) {
 	var empobj []Details.EMP
-	DB.Find(&empobj)
+	h.DB.Find(&empobj)
 	a.IndentedJSON(http.StatusOK, gin.H{
 		"message": "SUCCESSFUL",
 		"result":  &empobj,
 	})
 }
 
-func Creating(c *gin.Context) {
+func (h Handler) Creating(c *gin.Context) {
 	var empobj Details.EMP
 
+	//c.PostForm(empobj.Name)
+	//c.Request.FormValue(empobj.City)
+	//c.Request.FormValue(empobj.Password)
 	if err := c.BindJSON(&empobj); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
 	}
@@ -33,7 +41,7 @@ func Creating(c *gin.Context) {
 			"result":  &empobj,
 		})
 	}
-	DB.Create(&empobj)
+	h.DB.Create(&empobj)
 }
 
 func Fbyid(a *gin.Context) {
@@ -60,7 +68,7 @@ func Updating(a *gin.Context) {
 		return
 	}
 	if err := DB.Where("id = ?", id).Updates(&empobj).Error; err != nil {
-		a.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
+		a.JSON(http.StatusNotFound, gin.H{"err": err.Error()})
 		return
 	}
 	//a.JSON(http.StatusBadRequest, &empobj)
@@ -82,4 +90,7 @@ func Deleting(c *gin.Context) {
 		"message": "SUCCESSFUL",
 		"result":  empobj,
 	})
+}
+func Dbinit(db *gorm.DB) Handler {
+	return Handler{DB: dbc.Connect()}
 }
